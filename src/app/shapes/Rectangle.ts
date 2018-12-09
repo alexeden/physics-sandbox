@@ -1,4 +1,4 @@
-import { Point, Link, Shape } from '../lib';
+import { Point, Link, Shape } from '../physics';
 
 export class Rectangle implements Shape {
   points: Point[] = [];

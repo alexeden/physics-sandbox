@@ -2,6 +2,7 @@ import { Link } from './Link';
 import { Point } from './Point';
 import { Vector } from './Vector';
 import { Shape } from './types';
+import { PhysicsUtils } from './PhysicsUtils';
 
 export class PhysicsEngine {
   readonly ctx: CanvasRenderingContext2D;
@@ -43,9 +44,7 @@ export class PhysicsEngine {
 
     canvas.oncontextmenu = e => {
       e.preventDefault();
-      if (this.getClosestPoint()) {
-        this.removePoint(this.getClosestPoint());
-      }
+      if (this.closestPoint) this.removePoint(this.closestPoint);
     };
     canvas.onclick = e => {
       if (this.editMode) {
@@ -83,7 +82,8 @@ export class PhysicsEngine {
       const rect = this.canvas.getBoundingClientRect();
       this.mouse.x = e.clientX - rect.left;
       this.mouse.y = e.clientY - rect.top;
-      this.closestPoint = this.getClosestPoint();
+      const { point, distance } = PhysicsUtils.closestPoint(this.mouse, this.points);
+      this.closestPoint = distance < 10 ? point : null;
     };
   }
 
@@ -122,18 +122,6 @@ export class PhysicsEngine {
 
     if (this.points.indexOf(point) !== -1)
       this.points.splice(this.points.indexOf(point), 1);
-  }
-
-  getClosestPoint(): Point | null {
-    let closest = null;
-    let i = this.points.length;
-    while (i--) {
-      const point = this.points[i];
-      if (point.X.distance(this.mouse) < 10) {
-        closest = point;
-      }
-    }
-    return closest;
   }
 
   addPoint(x: number, y: number, fixed: boolean) {

@@ -1,4 +1,4 @@
-import { PhysicsEngine, Link, Point } from '../lib';
+import { PhysicsEngine, Link, Point } from '../physics';
 
 export interface RendererOptions {
   pointSize: number;

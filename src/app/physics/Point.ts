@@ -38,6 +38,7 @@ export class Point {
 
   checkWalls(x: number, y: number, w: number, h: number) {
     if (this.fixed) return;
+
     this.X.x = Math.max(x + 1, Math.min(w - 1, this.X.x));
     this.X.y = Math.max(y + 1, Math.min(h - 1, this.X.y));
 
