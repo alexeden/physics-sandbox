@@ -27,83 +27,71 @@ export class Renderer {
     this.ctx = canvas.getContext('2d')!;
   }
 
-  draw(scene: PhysicsEngine) {
+  private fill(fillStyle: string): this {
+    this.ctx.fillStyle = fillStyle;
+    this.ctx.fill();
+    return this;
+  }
+
+  private stroke(strokeStyle: string): this {
+    this.ctx.strokeStyle = strokeStyle;
+    this.ctx.stroke();
+    return this;
+  }
+
+  private line(x1: number, y1: number, x2: number, y2: number): this {
+    this.ctx.beginPath();
+    this.ctx.moveTo(x1, y1);
+    this.ctx.lineTo(x2, y2);
+    return this;
+  }
+
+  private circle(x: number, y: number, radius: number): this {
+    this.ctx.beginPath();
+    this.ctx.arc(x, y, radius, 0, Math.PI * 2, false);
+    return this;
+  }
+
+  draw(engine: PhysicsEngine) {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    if (scene.closestPoint) {
-      const { X, fixed } = scene.closestPoint;
-      this.ctx.fillStyle = fixed ? '#EDEA2633' : '#ffffff33';
-      this.ctx.beginPath();
-      this.ctx.arc(X.x, X.y, this.opts.pointSize * 3, 0, Math.PI * 2, false);
-      this.ctx.fill();
+    if (engine.closestPoint) {
+      const { X, fixed } = engine.closestPoint;
+      this.circle(X.x, X.y, 3 * this.opts.pointSize).fill(fixed ? '#EDEA2633' : '#ffffff33');
     }
-    scene.links.forEach(con => this.drawLink(con));
-    scene.points.forEach(point => this.drawPoint(point));
+    engine.links.forEach(con => this.drawLink(con));
+    engine.points.forEach(point => this.drawPoint(point));
 
-    if (scene.selectedPoint) {
-      const x = scene.selectedPoint.X.x;
-      const y = scene.selectedPoint.X.y;
-      this.ctx.beginPath();
-      this.ctx.arc(x, y, this.opts.pointSize * 3, 0, Math.PI * 2);
-      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-      this.ctx.fill();
-
-      this.ctx.beginPath();
-      this.ctx.arc(x, y, this.opts.pointSize, 0, Math.PI * 2);
-      this.ctx.fillStyle = scene.selectedPoint.fixed ? '#EDEA26' : '#aaa';
-      this.ctx.fill();
+    if (engine.selectedPoint) {
+      const x = engine.selectedPoint.X.x;
+      const y = engine.selectedPoint.X.y;
+      this.circle(x, y, 3 * this.opts.pointSize).fill('rgba(255, 255, 255, 0.2)');
+      this.circle(x, y, this.opts.pointSize).fill(engine.selectedPoint.fixed ? '#EDEA26' : '#aaa');
     }
 
-    if (scene.pointsBeingDrawn.length) {
-      const point = scene.pointsBeingDrawn[scene.pointsBeingDrawn.length - 1];
-
-      this.ctx.beginPath();
-      this.ctx.arc(point.X.x, point.X.y, this.opts.pointSize * 3, 0, Math.PI * 2);
-      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-      this.ctx.fill();
-
-      this.ctx.beginPath();
-      this.ctx.arc(point.X.x, point.X.y, this.opts.pointSize, 0, Math.PI * 2);
-      this.ctx.fillStyle = '#aaa';
-      this.ctx.fill();
+    if (engine.pointsBeingDrawn.length) {
+      const point = engine.pointsBeingDrawn[engine.pointsBeingDrawn.length - 1];
+      this.circle(point.X.x, point.X.y, 3 * this.opts.pointSize).fill('rgba(255, 255, 255, 0.2)');
+      this.circle(point.X.x, point.X.y, this.opts.pointSize).fill('#aaa');
     }
 
     /* Cursor */
-    this.ctx.beginPath();
-    this.ctx.arc(scene.mouse.x, scene.mouse.y, this.opts.cursorSize, 0, Math.PI * 2);
-    if (scene.selectedPoint) {
-      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-      this.ctx.fill();
-    }
-    this.ctx.strokeStyle = 'rgba(255, 255, 255, 1)';
-    this.ctx.stroke();
+    this.circle(engine.mouse.x, engine.mouse.y, this.opts.cursorSize).stroke('rgba(255, 255, 255, 1)');
+    if (engine.selectedPoint) this.fill('rgba(255, 255, 255, 0.5)');
   }
 
   drawPoint(pt: Point) {
-    if (pt.fixed) {
-      this.ctx.fillStyle = 'rgba(255,255,255,0.2)';
-      this.ctx.beginPath();
-      this.ctx.arc(pt.X.x, pt.X.y, this.opts.pointSize * 3, 0, Math.PI * 2, false);
-      this.ctx.fill();
-    }
-
-    this.ctx.fillStyle = pt.fixed ? '#EDEA26' : '#fff';
-    this.ctx.beginPath();
-    this.ctx.arc(pt.X.x, pt.X.y, this.opts.pointSize, 0, Math.PI * 2, false);
-    this.ctx.fill();
+    this.circle(pt.X.x, pt.X.y, this.opts.pointSize).fill(pt.fixed ? '#EDEA26' : '#fff');
+    if (pt.fixed) this.circle(pt.X.x, pt.X.y, 3 * this.opts.pointSize).fill('rgba(255,255,255,0.2)');
   }
 
   drawLink(link: Link) {
+    let strokeStyle = 'rgba(255,255,255,0.8)';
     if (this.opts.showStress) {
       const diff = link.length - link.p1.X.distance(link.p2.X);
       const per = Math.round(Math.min(Math.abs(diff / (link.length * this.opts.linkStressRatio)), 1) * 255);
-      this.ctx.strokeStyle = 'rgba(255, ' + (255 - per) + ', ' + (255 - per) + ', 1)';
+      strokeStyle = 'rgba(255, ' + (255 - per) + ', ' + (255 - per) + ', 1)';
     }
-    else this.ctx.strokeStyle = 'rgba(255,255,255,0.8)';
-
-    this.ctx.beginPath();
-    this.ctx.moveTo(link.p1.X.x, link.p1.X.y);
-    this.ctx.lineTo(link.p2.X.x, link.p2.X.y);
-    this.ctx.stroke();
+    this.line(link.p1.X.x, link.p1.X.y, link.p2.X.x, link.p2.X.y).stroke(strokeStyle);
   }
 }
