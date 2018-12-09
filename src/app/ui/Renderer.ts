@@ -1,4 +1,4 @@
-import { PhysicsEngine, Link, Point } from '../physics';
+import { PhysicsEngine, Link, Point, Vector } from '../physics';
 
 export interface RendererOptions {
   pointSize: number;
@@ -52,37 +52,26 @@ export class Renderer {
     return this;
   }
 
-  draw(engine: PhysicsEngine) {
+  clear(): this {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    // if (engine.closestPoint) {
-    //   const { X, fixed } = engine.closestPoint;
-    //   this.circle(X.x, X.y, 3 * this.opts.pointSize).fill(fixed ? '#EDEA2633' : '#ffffff33');
-    // }
-    engine.links.forEach(con => this.drawLink(con));
-    engine.points.forEach(point => this.drawPoint(point));
-
-    if (engine.selectedPoint) {
-      const x = engine.selectedPoint.X.x;
-      const y = engine.selectedPoint.X.y;
-      this.circle(x, y, 3 * this.opts.pointSize).fill('rgba(255, 255, 255, 0.2)');
-      this.circle(x, y, this.opts.pointSize).fill(engine.selectedPoint.fixed ? '#EDEA26' : '#aaa');
-    }
-
-    // if (engine.pointsBeingDrawn.length) {
-    //   const point = engine.pointsBeingDrawn[engine.pointsBeingDrawn.length - 1];
-    //   this.circle(point.X.x, point.X.y, 3 * this.opts.pointSize).fill('rgba(255, 255, 255, 0.2)');
-    //   this.circle(point.X.x, point.X.y, this.opts.pointSize).fill('#aaa');
-    // }
-
-    // /* Cursor */
-    // this.circle(engine.pointer.x, engine.pointer.y, this.opts.cursorSize).stroke('rgba(255, 255, 255, 1)');
-    // if (engine.selectedPoint) this.fill('rgba(255, 255, 255, 0.5)');
+    return this;
   }
 
-  drawPoint(pt: Point) {
-    this.circle(pt.X.x, pt.X.y, this.opts.pointSize).fill(pt.fixed ? '#EDEA26' : '#fff');
-    if (pt.fixed) this.circle(pt.X.x, pt.X.y, 3 * this.opts.pointSize).fill('rgba(255,255,255,0.2)');
+  drawPointer(pt: Vector, active = false) {
+    this.circle(pt.x, pt.y, this.opts.cursorSize).stroke('rgba(255, 255, 255, 1)');
+    if (active) this.fill('rgba(255, 255, 255, 0.5)');
+  }
+
+  drawPoint({ X, fixed }: Point, hovered: boolean, active: boolean) {
+    this.circle(X.x, X.y, this.opts.pointSize).fill(fixed ? '#EDEA26' : '#fff');
+    if (fixed) this.circle(X.x, X.y, 3 * this.opts.pointSize).fill('rgba(255,255,255,0.2)');
+    if (active) {
+      this.circle(X.x, X.y, 3 * this.opts.pointSize).fill('rgba(255, 255, 255, 0.2)');
+      this.circle(X.x, X.y, this.opts.pointSize).fill(fixed ? '#EDEA26' : '#aaa');
+    }
+    else if (hovered) {
+      this.circle(X.x, X.y, 3 * this.opts.pointSize).fill(fixed ? '#EDEA2633' : '#ffffff33');
+    }
   }
 
   drawLink(link: Link) {

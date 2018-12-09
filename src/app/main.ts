@@ -1,14 +1,9 @@
-import { PhysicsEngine } from './physics';
-import { Renderer, Sandbox } from './ui';
+import { Sandbox } from './ui';
 import { Rectangle, Shape } from './shapes';
 
 const canvas = document.createElement('canvas');
 const sandbox = new Sandbox(canvas).setHeight(window.innerHeight).setWidth(window.innerWidth);
 document.body.appendChild(canvas);
-// canvas.width = window.innerWidth;
-// canvas.height = window.innerHeight;
-const engine = new PhysicsEngine(canvas);
-const renderer = new Renderer(canvas);
 
 const crane = new Shape();
 const p1 = crane.addPoint(90, 40);
@@ -53,17 +48,9 @@ crane
     .connect(p12, p13)
     .connect(p12, p14)
     .connect(p13, p14);
-
+sandbox.addShape(crane);
 sandbox.addShape(new Rectangle(500, 70, 70, 70));
 const square = new Rectangle(630, 70, 50, 50);
 square.points[1].fixed = true;
 sandbox.addShape(square);
 sandbox.run();
-
-// const Loop = () => {
-//   engine.update(24);
-//   renderer.draw(engine);
-//   window.requestAnimationFrame(Loop);
-// };
-
-// Loop();
