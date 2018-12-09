@@ -1,65 +1,69 @@
 import { PhysicsEngine } from './physics';
 import { Renderer, Sandbox } from './ui';
-import { Rectangle } from './shapes';
+import { Rectangle, Shape } from './shapes';
 
 const canvas = document.createElement('canvas');
-const sandbox = new Sandbox(canvas);
+const sandbox = new Sandbox(canvas).setHeight(window.innerHeight).setWidth(window.innerWidth);
 document.body.appendChild(canvas);
 // canvas.width = window.innerWidth;
 // canvas.height = window.innerHeight;
 const engine = new PhysicsEngine(canvas);
 const renderer = new Renderer(canvas);
-const p1 = engine.addPoint(90, 40, false);
-const p2 = engine.addPoint(160, 40, false);
-const p3 = engine.addPoint(90, 110, false);
-const p4 = engine.addPoint(160, 110, false);
-const p5 = engine.addPoint(90, 180, false);
-const p6 = engine.addPoint(160, 180, false);
-const p7 = engine.addPoint(90, 250, false);
-const p8 = engine.addPoint(160, 250, false);
-const p9 = engine.addPoint(90, 320, true);
-const p10 = engine.addPoint(160, 320, true);
-const p11 = engine.addPoint(300, 40, false);
-const p12 = engine.addPoint(365, 198, false);
-const p13 = engine.addPoint(345, 218, false);
-const p14 = engine.addPoint(385, 218, false);
 
-engine.addLink(p1, p2);
-engine.addLink(p3, p4);
-engine.addLink(p5, p6);
-engine.addLink(p7, p8);
-engine.addLink(p1, p3);
-engine.addLink(p3, p5);
-engine.addLink(p5, p7);
-engine.addLink(p7, p9);
-engine.addLink(p2, p4);
-engine.addLink(p4, p6);
-engine.addLink(p6, p8);
-engine.addLink(p8, p10);
-engine.addLink(p1, p4);
-engine.addLink(p2, p3);
-engine.addLink(p3, p6);
-engine.addLink(p4, p5);
-engine.addLink(p5, p8);
-engine.addLink(p6, p7);
-engine.addLink(p7, p10);
-engine.addLink(p8, p9);
-engine.addLink(p2, p11);
-engine.addLink(p4, p11);
-engine.addLink(p11, p12);
-engine.addLink(p12, p13);
-engine.addLink(p12, p14);
-engine.addLink(p13, p14);
-engine.addShape(new Rectangle(500, 70, 70, 70));
+const crane = new Shape();
+const p1 = crane.addPoint(90, 40);
+const p2 = crane.addPoint(160, 40);
+const p3 = crane.addPoint(90, 110);
+const p4 = crane.addPoint(160, 110);
+const p5 = crane.addPoint(90, 180);
+const p6 = crane.addPoint(160, 180);
+const p7 = crane.addPoint(90, 250);
+const p8 = crane.addPoint(160, 250);
+const p9 = crane.addFixedPoint(90, 320);
+const p10 = crane.addFixedPoint(160, 320);
+const p11 = crane.addPoint(300, 40);
+const p12 = crane.addPoint(365, 198);
+const p13 = crane.addPoint(345, 218);
+const p14 = crane.addPoint(385, 218);
+
+crane
+    .connect(p1, p2)
+    .connect(p3, p4)
+    .connect(p5, p6)
+    .connect(p7, p8)
+    .connect(p1, p3)
+    .connect(p3, p5)
+    .connect(p5, p7)
+    .connect(p7, p9)
+    .connect(p2, p4)
+    .connect(p4, p6)
+    .connect(p6, p8)
+    .connect(p8, p10)
+    .connect(p1, p4)
+    .connect(p2, p3)
+    .connect(p3, p6)
+    .connect(p4, p5)
+    .connect(p5, p8)
+    .connect(p6, p7)
+    .connect(p7, p10)
+    .connect(p8, p9)
+    .connect(p2, p11)
+    .connect(p4, p11)
+    .connect(p11, p12)
+    .connect(p12, p13)
+    .connect(p12, p14)
+    .connect(p13, p14);
+
+sandbox.addShape(new Rectangle(500, 70, 70, 70));
 const square = new Rectangle(630, 70, 50, 50);
 square.points[1].fixed = true;
-engine.addShape(square);
+sandbox.addShape(square);
+sandbox.run();
 
+// const Loop = () => {
+//   engine.update(24);
+//   renderer.draw(engine);
+//   window.requestAnimationFrame(Loop);
+// };
 
-const Loop = () => {
-  engine.update(24);
-  renderer.draw(engine);
-  window.requestAnimationFrame(Loop);
-};
-
-Loop();
+// Loop();

@@ -1,11 +1,23 @@
 import { Vector } from './Vector';
 
+// interface PointOptions {
+
+// }
+
 export class Point {
   readonly X: Vector;
   readonly X0: Vector;
   readonly A: Vector;
 
-  constructor(
+  static free(x: number, y: number) {
+    return new Point(x, y, false);
+  }
+
+  static fixed(x: number, y: number) {
+    return new Point(x, y, true);
+  }
+
+  private constructor(
     public x: number,
     public y: number,
     public fixed = false

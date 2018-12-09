@@ -55,10 +55,10 @@ export class Renderer {
   draw(engine: PhysicsEngine) {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    if (engine.closestPoint) {
-      const { X, fixed } = engine.closestPoint;
-      this.circle(X.x, X.y, 3 * this.opts.pointSize).fill(fixed ? '#EDEA2633' : '#ffffff33');
-    }
+    // if (engine.closestPoint) {
+    //   const { X, fixed } = engine.closestPoint;
+    //   this.circle(X.x, X.y, 3 * this.opts.pointSize).fill(fixed ? '#EDEA2633' : '#ffffff33');
+    // }
     engine.links.forEach(con => this.drawLink(con));
     engine.points.forEach(point => this.drawPoint(point));
 
@@ -69,15 +69,15 @@ export class Renderer {
       this.circle(x, y, this.opts.pointSize).fill(engine.selectedPoint.fixed ? '#EDEA26' : '#aaa');
     }
 
-    if (engine.pointsBeingDrawn.length) {
-      const point = engine.pointsBeingDrawn[engine.pointsBeingDrawn.length - 1];
-      this.circle(point.X.x, point.X.y, 3 * this.opts.pointSize).fill('rgba(255, 255, 255, 0.2)');
-      this.circle(point.X.x, point.X.y, this.opts.pointSize).fill('#aaa');
-    }
+    // if (engine.pointsBeingDrawn.length) {
+    //   const point = engine.pointsBeingDrawn[engine.pointsBeingDrawn.length - 1];
+    //   this.circle(point.X.x, point.X.y, 3 * this.opts.pointSize).fill('rgba(255, 255, 255, 0.2)');
+    //   this.circle(point.X.x, point.X.y, this.opts.pointSize).fill('#aaa');
+    // }
 
-    /* Cursor */
-    this.circle(engine.mouse.x, engine.mouse.y, this.opts.cursorSize).stroke('rgba(255, 255, 255, 1)');
-    if (engine.selectedPoint) this.fill('rgba(255, 255, 255, 0.5)');
+    // /* Cursor */
+    // this.circle(engine.pointer.x, engine.pointer.y, this.opts.cursorSize).stroke('rgba(255, 255, 255, 1)');
+    // if (engine.selectedPoint) this.fill('rgba(255, 255, 255, 0.5)');
   }
 
   drawPoint(pt: Point) {
