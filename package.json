@@ -6,7 +6,7 @@
   "author": "Alex Eden",
   "license": "ISC",
   "scripts": {
-    "start": "nodemon",
+    "start": "webpack-dev-server",
     "build": "webpack"
   },
   "devDependencies": {
