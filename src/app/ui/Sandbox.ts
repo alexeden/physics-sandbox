@@ -5,6 +5,7 @@ import { Shape } from '../shapes/Shape';
 
 export interface SandboxOptions {
   pointerRange: number;
+  calcsPerFrame: number;
 }
 
 export class Sandbox {
@@ -22,6 +23,7 @@ export class Sandbox {
     opts: Partial<SandboxOptions> = {}
   ) {
     this.opts = {
+      calcsPerFrame: 24,
       pointerRange: 10,
       ...opts,
     };
@@ -49,7 +51,15 @@ export class Sandbox {
 
   private loop() {
     if (this.mode === SandboxMode.Running) {
-      this.engine.update(24, this.canvas.width, this.canvas.height);
+      let calcs = this.opts.calcsPerFrame;
+      const delta = 1 / calcs;
+      while (calcs--) {
+        if (this.activePoint) {
+          this.activePoint.X.x += (this.pointer.x - this.activePoint.X.x) / this.opts.calcsPerFrame;
+          this.activePoint.X.y += (this.pointer.y - this.activePoint.X.y) / this.opts.calcsPerFrame;
+        }
+        this.engine.update(delta, this.canvas.width, this.canvas.height);
+      }
     }
     this.render();
     window.requestAnimationFrame(this.loop.bind(this));
@@ -100,16 +110,13 @@ export class Sandbox {
     };
 
     this.canvas.onmousedown = e => this.hoveredPoint && (this.activePoint = this.hoveredPoint);
-    this.canvas.onmouseup = e => {
-      console.log(this.activePoint);
-      this.activePoint = null;
-    };
+    this.canvas.onmouseup = e => this.activePoint = null;
     this.canvas.onmousemove = e => {
       const rect = this.canvas.getBoundingClientRect();
       this.pointer.x = e.clientX - rect.left;
       this.pointer.y = e.clientY - rect.top;
       const { point, distance } = PhysicsUtils.closestPoint(this.pointer, this.engine.points);
-      this.hoveredPoint = distance < 10 ? point : null;
+      this.hoveredPoint = distance < this.opts.pointerRange ? point : null;
     };
   }
 

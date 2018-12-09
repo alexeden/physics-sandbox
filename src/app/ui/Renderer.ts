@@ -66,8 +66,7 @@ export class Renderer {
     this.circle(X.x, X.y, this.opts.pointSize).fill(fixed ? '#EDEA26' : '#fff');
     if (fixed) this.circle(X.x, X.y, 3 * this.opts.pointSize).fill('rgba(255,255,255,0.2)');
     if (active) {
-      this.circle(X.x, X.y, 3 * this.opts.pointSize).fill('rgba(255, 255, 255, 0.2)');
-      this.circle(X.x, X.y, this.opts.pointSize).fill(fixed ? '#EDEA26' : '#aaa');
+      this.circle(X.x, X.y, 5 * this.opts.pointSize).fill('rgba(255, 255, 255, 0.2)');
     }
     else if (hovered) {
       this.circle(X.x, X.y, 3 * this.opts.pointSize).fill(fixed ? '#EDEA2633' : '#ffffff33');

@@ -13,24 +13,16 @@ export class PhysicsEngine {
     this.points = [];
   }
 
-  update(iter: number, width: number, height: number) {
-    const delta = 1 / iter;
-    while (iter--) {
-      // if (this.selectedPoint) {
-      //   this.selectedPoint.X.x += (this.pointer.x - this.selectedPoint.X.x) / iter;
-      //   this.selectedPoint.X.y += (this.pointer.y - this.selectedPoint.X.y) / iter;
-      // }
+  update(delta: number, width: number, height: number) {
+    this.points.forEach(point => {
+      point.addForce(this.gravity);
+      point.update(delta);
+      point.checkWalls(0, 0, width, height);
+    });
 
-      this.points.forEach(point => {
-        point.addForce(this.gravity);
-        point.update(delta);
-        point.checkWalls(0, 0, width, height);
-      });
-
-      this.links.forEach(link => {
-        link.resolve();
-      });
-    }
+    this.links.forEach(link => {
+      link.resolve();
+    });
   }
 
   removePoint(point: Point) {
