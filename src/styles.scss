@@ -1,0 +1,29 @@
+@import "~normalize.css/normalize.css";
+
+* {
+  margin: 0;
+  overflow: hidden;
+  user-select: none;
+  cursor: none;
+}
+
+body {
+  // background: #DA4453;
+  // background: -webkit-linear-gradient(to right, #89216B, #DA4453);
+  // background: linear-gradient(to right, #89216B, #DA4453);
+  // background: #4776E6;
+  // background: -webkit-linear-gradient(to bottom, #8E54E9, #4776E6);
+  // background: linear-gradient(to bottom, #8E54E9, #4776E6);
+
+  background: #f857a6;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to bottom, #ff5858, #f857a6);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom, #ff5858, #f857a6); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
+
+canvas {
+  margin: 0 auto;
+  display: block;
+  border: 1px dashed #555;
+  border-top: none;
+}
