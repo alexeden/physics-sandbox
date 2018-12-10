@@ -46,8 +46,7 @@
     "no-implicit-dependencies": false,
     "no-import-side-effect": true,
     "no-inferrable-types": [
-      true,
-      "ignore-params"
+      true
     ],
     "no-invalid-this": true,
     "no-namespace": false,
