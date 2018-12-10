@@ -1,15 +1,15 @@
-import { Link } from './Link';
+import { Edge } from './Edge';
 import { Point } from './Point';
 import { Vector } from './Vector';
 
 export class PhysicsEngine {
-  links: Link[];
+  edges: Edge[];
   points: Point[];
 
   constructor(
     public gravity: Vector = new Vector(0, 0.98)
   ) {
-    this.links = [];
+    this.edges = [];
     this.points = [];
   }
 
@@ -20,17 +20,17 @@ export class PhysicsEngine {
       point.checkWalls(0, 0, width, height);
     });
 
-    this.links.forEach(link => {
-      link.resolve();
+    this.edges.forEach(edge => {
+      edge.resolve();
     });
   }
 
   removePoint(point: Point) {
-    let i = this.links.length;
+    let i = this.edges.length;
     while (i--) {
-      const link = this.links[i];
-      if (link.includes(point))
-        this.links.splice(this.links.indexOf(link), 1);
+      const edge = this.edges[i];
+      if (edge.includes(point))
+        this.edges.splice(this.edges.indexOf(edge), 1);
     }
 
     if (this.points.indexOf(point) !== -1)

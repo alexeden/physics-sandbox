@@ -1,4 +1,4 @@
-import { PhysicsEngine, Link, Point, Vector } from '../physics';
+import { Edge, Point, Vector } from '../physics';
 
 export interface RendererOptions {
   pointSize: number;
@@ -87,15 +87,15 @@ export class Renderer {
     this.ctx.restore();
   }
 
-  drawLink(link: Link) {
+  drawEdge(edge: Edge) {
     this.ctx.save();
     let strokeStyle = 'rgba(255,255,255,0.8)';
     if (this.opts.showStress) {
-      const diff = link.length - link.p1.X.distance(link.p2.X);
-      const per = Math.round(Math.min(Math.abs(diff / (link.length * this.opts.linkStressRatio)), 1) * 255);
+      const diff = edge.length - edge.p1.X.distance(edge.p2.X);
+      const per = Math.round(Math.min(Math.abs(diff / (edge.length * this.opts.linkStressRatio)), 1) * 255);
       strokeStyle = 'rgba(255, ' + (255 - per) + ', ' + (255 - per) + ', 1)';
     }
-    this.line(link.p1.X.x, link.p1.X.y, link.p2.X.x, link.p2.X.y).stroke(strokeStyle);
+    this.line(edge.p1.X.x, edge.p1.X.y, edge.p2.X.x, edge.p2.X.y).stroke(strokeStyle);
     this.ctx.restore();
   }
 }

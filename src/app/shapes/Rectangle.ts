@@ -1,4 +1,4 @@
-import { Point, Link } from '../physics';
+import { Point } from '../physics';
 import { Shape } from './Shape';
 
 export class Rectangle extends Shape {

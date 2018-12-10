@@ -1,13 +1,20 @@
 import { Point } from './Point';
 import { Vector } from './Vector';
 
-export class Link {
+const newId = (() => {
+  let id = 0;
+  return () => id++;
+})();
+
+export class Edge {
   readonly length: number;
+  readonly id: number;
 
   constructor(
     readonly p1: Point,
     readonly p2: Point
   ) {
+    this.id = newId();
     this.length = this.p1.X.distance(p2.X);
   }
 

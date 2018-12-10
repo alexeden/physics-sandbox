@@ -1,5 +1,5 @@
 // export * from './types';
-export { Link } from './Link';
+export { Edge } from './Edge';
 export { PhysicsEngine } from './PhysicsEngine';
 export { PhysicsUtils } from './PhysicsUtils';
 export { Point } from './Point';

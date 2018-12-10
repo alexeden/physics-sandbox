@@ -1,7 +1,7 @@
-import { Link, Point } from '../physics';
+import { Edge, Point } from '../physics';
 
 export class Shape {
-  readonly links: Link[] = [];
+  readonly edges: Edge[] = [];
   readonly points: Point[] = [];
 
   addPoint(x: number, y: number): Point {
@@ -17,7 +17,7 @@ export class Shape {
   }
 
   connect(p1: Point, p2: Point): this {
-    this.links.push(new Link(p1, p2));
+    this.edges.push(new Edge(p1, p2));
     return this;
   }
 }

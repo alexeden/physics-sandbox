@@ -1,13 +1,15 @@
 import { Vector } from './Vector';
 
-// interface PointOptions {
-
-// }
+const newId = (() => {
+  let id = 0;
+  return () => id++;
+})();
 
 export class Point {
   readonly X: Vector;
   readonly X0: Vector;
   readonly A: Vector;
+  readonly id: number;
 
   static free(x: number, y: number) {
     return new Point(x, y, false);
@@ -22,6 +24,7 @@ export class Point {
     public y: number,
     public fixed = false
   ) {
+    this.id = newId();
     this.X = new Vector(x, y);
     this.X0 = new Vector(x, y);
     this.A = new Vector();

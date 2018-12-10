@@ -1,6 +1,6 @@
 import { SandboxMode } from './types';
 import { Renderer } from './Renderer';
-import { PhysicsEngine, Vector, PhysicsUtils, Point, Link } from '../physics';
+import { PhysicsEngine, Vector, PhysicsUtils, Point, Edge } from '../physics';
 import { Shape } from '../shapes/Shape';
 
 export interface SandboxOptions {
@@ -67,7 +67,7 @@ export class Sandbox {
 
   private render() {
     this.renderer.clear();
-    this.engine.links.forEach(con => this.renderer.drawLink(con));
+    this.engine.edges.forEach(edge => this.renderer.drawEdge(edge));
     const lastPendingPoint = this.pendingPoints.slice(-1)[0];
     this.engine.points.forEach(point => {
       const isActive = point === this.activePoint || point === lastPendingPoint;
@@ -75,7 +75,7 @@ export class Sandbox {
     });
     const lines = [
       `Points\t${this.engine.points.length}`,
-      `Links\t${this.engine.links.length}`,
+      `Links\t${this.engine.edges.length}`,
       `Pending\t${this.pendingPoints.length}`,
     ];
 
@@ -103,18 +103,25 @@ export class Sandbox {
         const clickPoint = new Vector(e.clientX - rect.left, e.clientY - rect.top);
         const { point, distance } = PhysicsUtils.closestPoint(clickPoint, this.engine.points.concat(this.pendingPoints));
 
-        const p = distance > this.opts.pointerRange
+        // If an existing point was in range of the click, select it,
+        // otherwise, create a a new point at the click event coordinates
+        const activePoint = distance > this.opts.pointerRange
           ? Point[e.shiftKey ? 'fixed' : 'free'](clickPoint.x, clickPoint.y)
           : point;
 
-        if (p !== point) this.engine.points.push(p);
-
-        if (this.pendingPoints.length) {
-          const c = new Link(p, this.pendingPoints.slice(-1)[0]);
-          this.engine.links.push(c);
+        const pointIsNew = activePoint !== point;
+        // If the active point is new, push it to the engine
+        if (pointIsNew) {
+          console.log('new point created, pushing to engine');
+          this.engine.points.push(activePoint);
         }
 
-        this.pendingPoints.push(p);
+        if (pointIsNew && this.pendingPoints.length) {
+          const link = new Edge(activePoint, this.pendingPoints.slice(-1)[0]);
+          this.engine.edges.push(link);
+        }
+
+        this.pendingPoints.push(activePoint);
       }
     };
 
@@ -131,7 +138,7 @@ export class Sandbox {
 
   addShape(shape: Shape) {
     this.engine.points.push(...shape.points);
-    this.engine.links.push(...shape.links);
+    this.engine.edges.push(...shape.edges);
   }
 
   setHeight(h: number) {
