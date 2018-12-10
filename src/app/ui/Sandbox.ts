@@ -1,6 +1,6 @@
 import { SandboxMode } from './types';
 import { Renderer } from './Renderer';
-import { PhysicsEngine, Vector, PhysicsUtils, Point, Edge } from '../physics';
+import { PhysicsEngine, Vector, PhysicsUtils, Point, RigidEdge } from '../physics';
 import { Shape } from '../shapes/Shape';
 
 export interface SandboxOptions {
@@ -119,7 +119,7 @@ export class Sandbox {
 
       this.engine.addPoint(nextPoint);
       if (this.activePoint && !this.engine.pointsAreConnected(this.activePoint, nextPoint)) {
-        const link = new Edge(nextPoint, this.activePoint);
+        const link = new RigidEdge(nextPoint, this.activePoint);
         this.engine.edges.push(link);
       }
       this.activePoint = nextPoint;

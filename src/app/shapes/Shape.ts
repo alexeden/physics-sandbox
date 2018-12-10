@@ -1,7 +1,7 @@
-import { Edge, Point } from '../physics';
+import {RigidEdge, Point } from '../physics';
 
 export class Shape {
-  readonly edges: Edge[] = [];
+  readonly edges:RigidEdge[] = [];
   readonly points: Point[] = [];
 
   addPoint(x: number, y: number): Point {
@@ -17,7 +17,7 @@ export class Shape {
   }
 
   connect(p1: Point, p2: Point): this {
-    this.edges.push(new Edge(p1, p2));
+    this.edges.push(new RigidEdge(p1, p2));
     return this;
   }
 }

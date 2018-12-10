@@ -6,7 +6,10 @@ const newId = (() => {
   return () => id++;
 })();
 
-export class Edge {
+
+
+
+export class RigidEdge {
   readonly length: number;
   readonly id: number;
 

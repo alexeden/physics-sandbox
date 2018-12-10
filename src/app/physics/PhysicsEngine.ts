@@ -1,9 +1,9 @@
-import { Edge } from './Edge';
+import {RigidEdge } from './Edge';
 import { Point } from './Point';
 import { Vector } from './Vector';
 
 export class PhysicsEngine {
-  edges: Edge[];
+  edges:RigidEdge[];
   points: Point[];
 
   constructor(
@@ -25,7 +25,7 @@ export class PhysicsEngine {
     });
   }
 
-  pointsAreConnected(p1: Point, p2: Point): Edge | null {
+  pointsAreConnected(p1: Point, p2: Point):RigidEdge | null {
     return this.edges.find(edge => edge.includes(p1) && edge.includes(p2)) || null;
   }
 

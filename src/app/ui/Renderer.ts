@@ -1,4 +1,4 @@
-import { Edge, Point, Vector } from '../physics';
+import {RigidEdge, Point, Vector } from '../physics';
 
 export interface RendererOptions {
   pointSize: number;
@@ -88,7 +88,7 @@ export class Renderer {
     this.ctx.restore();
   }
 
-  drawEdge(edge: Edge) {
+  drawEdge(edge:RigidEdge) {
     this.ctx.save();
     let strokeStyle = 'rgba(255,255,255,0.8)';
     if (this.opts.showStress) {
