@@ -24,10 +24,9 @@ export class Edge {
 
   resolve() {
     const connector = Vector.sub(this.p2.X, this.p1.X);
-    const diff = connector.length() - this.length;
-    connector.normalize();
-    const f = connector.mul(diff * 0.5);
-    this.p1.move(f);
-    this.p2.move(f.neg());
+    const offset = connector.length() - this.length;
+    const correction = connector.normalize().mul(offset * 0.5);
+    this.p1.move(correction);
+    this.p2.move(correction.neg());
   }
 }
