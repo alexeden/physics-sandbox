@@ -15,8 +15,12 @@ export class Sandbox {
   mode = SandboxMode.Running;
   private pointer = new Vector();
   private hoveredPoint: Point | null = null;
+  /**
+   * When in edit mode, the last selected or created point.
+   * Will be used as the origin point when a new edge is created.
+   */
   private activePoint: Point | null = null;
-  private pendingPoints: Point[] = [];
+  private dragPoint: Point | null = null;
 
   constructor(
     readonly canvas: HTMLCanvasElement,
@@ -31,14 +35,18 @@ export class Sandbox {
     this.engine = new PhysicsEngine();
     this.listen();
     document.onkeypress = e => {
+      console.log(e.key);
       switch (e.key) {
+        case 'Enter':
+          this.activePoint = null;
+          break;
         case 'e':
           this.mode = SandboxMode.Edit;
-          this.pendingPoints = [];
+          // this.activePoint = null;
           break;
         case 'r':
           this.mode = SandboxMode.Running;
-          this.pendingPoints = [];
+          this.activePoint = null;
           break;
       }
     };
@@ -54,9 +62,9 @@ export class Sandbox {
       let calcs = this.opts.calcsPerFrame;
       const delta = 1 / calcs;
       while (calcs--) {
-        if (this.activePoint) {
-          this.activePoint.X.x += (this.pointer.x - this.activePoint.X.x) / this.opts.calcsPerFrame;
-          this.activePoint.X.y += (this.pointer.y - this.activePoint.X.y) / this.opts.calcsPerFrame;
+        if (this.dragPoint) {
+          this.dragPoint.X.x += (this.pointer.x - this.dragPoint.X.x) / this.opts.calcsPerFrame;
+          this.dragPoint.X.y += (this.pointer.y - this.dragPoint.X.y) / this.opts.calcsPerFrame;
         }
         this.engine.update(delta, this.canvas.width, this.canvas.height);
       }
@@ -68,65 +76,26 @@ export class Sandbox {
   private render() {
     this.renderer.clear();
     this.engine.edges.forEach(edge => this.renderer.drawEdge(edge));
-    const lastPendingPoint = this.pendingPoints.slice(-1)[0];
     this.engine.points.forEach(point => {
-      const isActive = point === this.activePoint || point === lastPendingPoint;
+      const isActive = point === this.dragPoint || point === this.activePoint;
       this.renderer.drawPoint(point, point === this.hoveredPoint, isActive);
     });
-    const lines = [
+    const textLines = [
       `Points\t${this.engine.points.length}`,
       `Links\t${this.engine.edges.length}`,
-      `Pending\t${this.pendingPoints.length}`,
     ];
 
-    lines.forEach((line, i) =>
+    textLines.forEach((line, i) =>
       this.renderer.text(line, this.canvas.width - 10, 20 * i + 10, 'end')
     );
-    this.renderer.drawPointer(this.pointer, !!this.activePoint);
+    this.renderer.drawPointer(this.pointer, !!this.dragPoint);
   }
 
   private listen() {
-    this.canvas.oncontextmenu = e => {
-      e.preventDefault();
-      const rect = this.canvas.getBoundingClientRect();
-      const clickPoint = new Vector(e.clientX - rect.left, e.clientY - rect.top);
-      const { point, distance } = PhysicsUtils.closestPoint(clickPoint, this.engine.points);
-
-      if (distance < this.opts.pointerRange) {
-        this.engine.removePoint(point);
-      }
-    };
-
-    this.canvas.onclick = e => {
-      if (this.mode === SandboxMode.Edit) {
-        const rect = this.canvas.getBoundingClientRect();
-        const clickPoint = new Vector(e.clientX - rect.left, e.clientY - rect.top);
-        const { point, distance } = PhysicsUtils.closestPoint(clickPoint, this.engine.points.concat(this.pendingPoints));
-
-        // If an existing point was in range of the click, select it,
-        // otherwise, create a a new point at the click event coordinates
-        const activePoint = distance > this.opts.pointerRange
-          ? Point[e.shiftKey ? 'fixed' : 'free'](clickPoint.x, clickPoint.y)
-          : point;
-
-        const pointIsNew = activePoint !== point;
-        // If the active point is new, push it to the engine
-        if (pointIsNew) {
-          console.log('new point created, pushing to engine');
-          this.engine.points.push(activePoint);
-        }
-
-        if (pointIsNew && this.pendingPoints.length) {
-          const link = new Edge(activePoint, this.pendingPoints.slice(-1)[0]);
-          this.engine.edges.push(link);
-        }
-
-        this.pendingPoints.push(activePoint);
-      }
-    };
-
-    this.canvas.onmousedown = e => this.hoveredPoint && (this.activePoint = this.hoveredPoint);
-    this.canvas.onmouseup = e => this.activePoint = null;
+    this.canvas.oncontextmenu = this.handleRightClick.bind(this);
+    this.canvas.onclick = this.handleLeftClick.bind(this);
+    this.canvas.onmousedown = e => this.hoveredPoint && (this.dragPoint = this.hoveredPoint);
+    this.canvas.onmouseup = e => this.dragPoint = null;
     this.canvas.onmousemove = e => {
       const rect = this.canvas.getBoundingClientRect();
       this.pointer.x = e.clientX - rect.left;
@@ -134,6 +103,38 @@ export class Sandbox {
       const { point, distance } = PhysicsUtils.closestPoint(this.pointer, this.engine.points);
       this.hoveredPoint = distance < this.opts.pointerRange ? point : null;
     };
+  }
+
+  private handleLeftClick(e: MouseEvent) {
+    if (this.mode === SandboxMode.Edit) {
+      const rect = this.canvas.getBoundingClientRect();
+      const clickPoint = new Vector(e.clientX - rect.left, e.clientY - rect.top);
+      const { point, distance } = PhysicsUtils.closestPoint(clickPoint, this.engine.points);
+
+      // If an existing point was in range of the click, select it,
+      // otherwise, create a a new point at the click event coordinates
+      const nextPoint = distance > this.opts.pointerRange
+        ? Point[e.shiftKey ? 'fixed' : 'free'](clickPoint.x, clickPoint.y)
+        : point;
+
+      this.engine.addPoint(nextPoint);
+      if (this.activePoint && !this.engine.pointsAreConnected(this.activePoint, nextPoint)) {
+        const link = new Edge(nextPoint, this.activePoint);
+        this.engine.edges.push(link);
+      }
+      this.activePoint = nextPoint;
+    }
+  }
+
+  private handleRightClick(e: MouseEvent) {
+    e.preventDefault();
+    const rect = this.canvas.getBoundingClientRect();
+    const clickPoint = new Vector(e.clientX - rect.left, e.clientY - rect.top);
+    const { point, distance } = PhysicsUtils.closestPoint(clickPoint, this.engine.points);
+    this.activePoint = null;
+    if (distance < this.opts.pointerRange) {
+      this.engine.removePoint(point);
+    }
   }
 
   addShape(shape: Shape) {

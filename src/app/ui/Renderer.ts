@@ -74,9 +74,10 @@ export class Renderer {
     this.ctx.restore();
   }
 
-  drawPoint({ X, fixed }: Point, hovered: boolean, active: boolean) {
+  drawPoint({ X, fixed, id }: Point, hovered: boolean, active: boolean) {
     this.ctx.save();
     this.circle(X.x, X.y, this.opts.pointSize).fill(fixed ? '#EDEA26' : '#fff');
+    this.text(`${id}`, X.x, X.y - 5, 'center', 'bottom');
     if (fixed) this.circle(X.x, X.y, 3 * this.opts.pointSize).fill('rgba(255,255,255,0.2)');
     if (active) {
       this.circle(X.x, X.y, 5 * this.opts.pointSize).fill('rgba(255, 255, 255, 0.2)');

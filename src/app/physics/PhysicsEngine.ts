@@ -25,6 +25,18 @@ export class PhysicsEngine {
     });
   }
 
+  pointsAreConnected(p1: Point, p2: Point): Edge | null {
+    return this.edges.find(edge => edge.includes(p1) && edge.includes(p2)) || null;
+  }
+
+  addPoint(point: Point) {
+    if (this.points.map(({ id }) => id).includes(point.id)) return point;
+    else {
+      this.points.push(point);
+      return point;
+    }
+  }
+
   removePoint(point: Point) {
     let i = this.edges.length;
     while (i--) {
