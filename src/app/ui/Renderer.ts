@@ -24,7 +24,7 @@ export class Renderer {
     };
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
-    this.ctx = canvas.getContext('2d')!;
+    this.ctx = canvas.getContext('2d', { alpha: false })!;
   }
 
   private fill(fillStyle: string): this {
@@ -57,12 +57,25 @@ export class Renderer {
     return this;
   }
 
+  text(text: string, x = 10, y = 10, align: CanvasTextAlign = 'start', baseline: CanvasTextBaseline = 'top') {
+    this.ctx.save();
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.textBaseline = baseline;
+    this.ctx.textAlign = align;
+    this.ctx.font = '16px monospace';
+    this.ctx.fillText(text, x, y);
+    this.ctx.restore();
+  }
+
   drawPointer(pt: Vector, active = false) {
+    this.ctx.save();
     this.circle(pt.x, pt.y, this.opts.cursorSize).stroke('rgba(255, 255, 255, 1)');
     if (active) this.fill('rgba(255, 255, 255, 0.5)');
+    this.ctx.restore();
   }
 
   drawPoint({ X, fixed }: Point, hovered: boolean, active: boolean) {
+    this.ctx.save();
     this.circle(X.x, X.y, this.opts.pointSize).fill(fixed ? '#EDEA26' : '#fff');
     if (fixed) this.circle(X.x, X.y, 3 * this.opts.pointSize).fill('rgba(255,255,255,0.2)');
     if (active) {
@@ -71,9 +84,11 @@ export class Renderer {
     else if (hovered) {
       this.circle(X.x, X.y, 3 * this.opts.pointSize).fill(fixed ? '#EDEA2633' : '#ffffff33');
     }
+    this.ctx.restore();
   }
 
   drawLink(link: Link) {
+    this.ctx.save();
     let strokeStyle = 'rgba(255,255,255,0.8)';
     if (this.opts.showStress) {
       const diff = link.length - link.p1.X.distance(link.p2.X);
@@ -81,5 +96,6 @@ export class Renderer {
       strokeStyle = 'rgba(255, ' + (255 - per) + ', ' + (255 - per) + ', 1)';
     }
     this.line(link.p1.X.x, link.p1.X.y, link.p2.X.x, link.p2.X.y).stroke(strokeStyle);
+    this.ctx.restore();
   }
 }

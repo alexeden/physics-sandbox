@@ -73,6 +73,15 @@ export class Sandbox {
       const isActive = point === this.activePoint || point === lastPendingPoint;
       this.renderer.drawPoint(point, point === this.hoveredPoint, isActive);
     });
+    const lines = [
+      `Points\t${this.engine.points.length}`,
+      `Links\t${this.engine.links.length}`,
+      `Pending\t${this.pendingPoints.length}`,
+    ];
+
+    lines.forEach((line, i) =>
+      this.renderer.text(line, this.canvas.width - 10, 20 * i + 10, 'end')
+    );
     this.renderer.drawPointer(this.pointer, !!this.activePoint);
   }
 
