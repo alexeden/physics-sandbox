@@ -20,8 +20,8 @@ export class Point {
   }
 
   private constructor(
-    public x: number,
-    public y: number,
+    private x: number,
+    private y: number,
     public fixed = false
   ) {
     this.id = newId();

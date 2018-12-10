@@ -2,13 +2,12 @@ import { Sandbox } from './ui';
 import { Rectangle, Shape } from './shapes';
 
 const canvas = document.createElement('canvas');
-const sandbox = new Sandbox(canvas).setHeight(window.innerHeight).setWidth(window.innerWidth);
+const sandbox = new Sandbox(canvas, { calcsPerFrame: 100 }).setHeight(window.innerHeight).setWidth(window.innerWidth);
 document.body.appendChild(canvas);
 
 const h1 = canvas.height / 2;
 const h2 = h1 + 100;
 const dx = canvas.width / 10;
-const w = canvas.width;
 const wave = new Shape();
 const wp1 = wave.addFixedPoint(dx, h1);
 const wp6 = wave.addFixedPoint(dx * 6, h1);

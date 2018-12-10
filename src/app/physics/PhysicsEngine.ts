@@ -7,7 +7,7 @@ export class PhysicsEngine {
   points: Point[];
 
   constructor(
-    public gravity: Vector = new Vector(0, 0.98)
+    public gravity: Vector = new Vector(0, 0.9)
   ) {
     this.edges = [];
     this.points = [];

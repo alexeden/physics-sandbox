@@ -19,6 +19,10 @@ export abstract class Edge {
     return p === this.p1 || p === this.p2;
   }
 
+  asVector() {
+    return Vector.sub(this.p2.X, this.p1.X);
+  }
+
   center(): Vector {
     return Vector.sub(this.p2.X, this.p1.X).div(2).add(this.p1.X);
   }
@@ -37,7 +41,7 @@ export class RigidEdge extends Edge {
   }
 
   resolve() {
-    const connector = Vector.sub(this.p2.X, this.p1.X);
+    const connector = this.asVector();
     const offset = connector.length() - this.length;
     const correction = connector.normalize().mul(offset * 0.5);
     this.p1.move(correction);
@@ -57,11 +61,15 @@ export class SpringEdge extends Edge {
     this.length = this.p1.X.distance(p2.X);
   }
 
+  offset() {
+    return Vector.sub(this.p2.X, this.p1.X).length() - this.length;
+  }
+
   resolve() {
-    const connector = Vector.sub(this.p2.X, this.p1.X);
-    const offset = connector.length() - this.length;
-    const correction = connector.normalize().mul(offset * this.k);
-    this.p1.addForce(correction);
-    this.p2.addForce(correction.neg());
+    const connector = this.asVector();
+    const offset = this.offset();
+    const pull = connector.normalize().mul(offset * this.k);
+    this.p1.addForce(pull);
+    this.p2.addForce(pull.neg());
   }
 }

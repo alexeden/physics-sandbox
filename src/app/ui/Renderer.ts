@@ -1,4 +1,4 @@
-import {RigidEdge, Point, Vector, Edge } from '../physics';
+import {RigidEdge, Point, Vector, Edge, SpringEdge } from '../physics';
 
 export interface RendererOptions {
   pointSize: number;
@@ -74,10 +74,9 @@ export class Renderer {
     this.ctx.restore();
   }
 
-  drawPoint({ X, fixed, id }: Point, hovered: boolean, active: boolean) {
+  drawPoint({ X, A, fixed, id }: Point, hovered: boolean, active: boolean) {
     this.ctx.save();
     this.circle(X.x, X.y, this.opts.pointSize).fill(fixed ? '#EDEA26' : '#fff');
-    this.text(`${id}`, X.x, X.y - 5, 'center', 'bottom');
     if (fixed) this.circle(X.x, X.y, 3 * this.opts.pointSize).fill('rgba(255,255,255,0.2)');
     if (active) {
       this.circle(X.x, X.y, 5 * this.opts.pointSize).fill('rgba(255, 255, 255, 0.2)');
@@ -89,18 +88,40 @@ export class Renderer {
   }
 
   drawEdge(edge: Edge) {
-    const { p1, p2, id } = edge;
+    const { p1, p2 } = edge;
     this.ctx.save();
-    let strokeStyle = 'rgba(255,255,255,1)';
-    // if (this.opts.showStress) {
-    //   const diff = edge.length - edge.p1.X.distance(edge.p2.X);
-    //   const per = Math.round(Math.min(Math.abs(diff / (edge.length * this.opts.linkStressRatio)), 1) * 255);
-    //   strokeStyle = 'rgba(255, ' + (255 - per) + ', ' + (255 - per) + ', 1)';
-    // }
-    // const center = edge.center();
-    // this.text(`${p1.id} ${p2.id}`, center.x, center.y - 5, 'center', 'middle');
 
-    this.line(p1.X.x, p1.X.y, p2.X.x, p2.X.y).stroke(strokeStyle);
+    if (edge instanceof RigidEdge) {
+      let strokeStyle = 'rgba(255,255,255,1)';
+      // if (this.opts.showStress) {
+      //   const diff = edge.length - edge.p1.X.distance(edge.p2.X);
+      //   const per = Math.round(Math.min(Math.abs(diff / (edge.length * this.opts.linkStressRatio)), 1) * 255);
+      //   strokeStyle = 'rgba(255, ' + (255 - per) + ', ' + (255 - per) + ', 1)';
+      // }
+      // const center = edge.center();
+      // this.text(`${p1.id} ${p2.id}`, center.x, center.y - 5, 'center', 'middle');
+
+      this.line(p1.X.x, p1.X.y, p2.X.x, p2.X.y).stroke(strokeStyle);
+    }
+    else if (edge instanceof SpringEdge) {
+      this.ctx.lineCap = 'round';
+      this.ctx.lineJoin = 'round';
+      this.ctx.lineWidth = 3;
+      this.ctx.strokeStyle = '#8c6eef';
+      const vec = edge.asVector();
+      const angle = Math.atan2(vec.y, vec.x) - Math.PI/2;
+      this.ctx.translate(p1.X.x, p1.X.y);
+      this.ctx.rotate(angle);
+      this.ctx.beginPath();
+      this.ctx.lineTo(0, 0);
+      const coils = this.canvas.height / 30;
+      const dist = vec.length() / coils;
+      const dx = this.canvas.height * 0.004;
+      for (let n = 1; n <= coils; n++)
+        this.ctx.lineTo((n % 2 === 0 ? -1 : 1) * dx, dist * n);
+      this.ctx.stroke();
+      this.ctx.closePath();
+    }
     this.ctx.restore();
   }
 }
