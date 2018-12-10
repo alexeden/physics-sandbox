@@ -1,7 +1,7 @@
-import {RigidEdge, Point } from '../physics';
+import { RigidEdge, Point, SpringEdge } from '../physics';
 
 export class Shape {
-  readonly edges:RigidEdge[] = [];
+  readonly edges: RigidEdge[] = [];
   readonly points: Point[] = [];
 
   addPoint(x: number, y: number): Point {
@@ -18,6 +18,11 @@ export class Shape {
 
   connect(p1: Point, p2: Point): this {
     this.edges.push(new RigidEdge(p1, p2));
+    return this;
+  }
+
+  spring(p1: Point, p2: Point, k?: number): this {
+    this.edges.push(new SpringEdge(p1, p2, k));
     return this;
   }
 }

@@ -17,9 +17,12 @@ const p8 = crane.addPoint(160, 250);
 const p9 = crane.addFixedPoint(90, 320);
 const p10 = crane.addFixedPoint(160, 320);
 const p11 = crane.addPoint(300, 40);
-const p12 = crane.addPoint(365, 198);
-const p13 = crane.addPoint(345, 218);
-const p14 = crane.addPoint(385, 218);
+const p12 = crane.addPoint(300, 198);
+const p13 = crane.addPoint(280, 218);
+const p14 = crane.addPoint(320, 218);
+// const p12 = crane.addPoint(365, 198);
+// const p13 = crane.addPoint(345, 218);
+// const p14 = crane.addPoint(385, 218);
 
 crane
     .connect(p1, p2)
@@ -44,7 +47,7 @@ crane
     .connect(p8, p9)
     .connect(p2, p11)
     .connect(p4, p11)
-    .connect(p11, p12)
+    .spring(p11, p12, 0.01)
     .connect(p12, p13)
     .connect(p12, p14)
     .connect(p13, p14);

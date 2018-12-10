@@ -1,5 +1,5 @@
 // export * from './types';
-export * from './Edge';
+export { Edge, RigidEdge, SpringEdge } from './Edge';
 export { PhysicsEngine } from './PhysicsEngine';
 export { PhysicsUtils } from './PhysicsUtils';
 export { Point } from './Point';

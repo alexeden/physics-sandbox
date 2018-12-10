@@ -1,9 +1,9 @@
-import {RigidEdge } from './Edge';
+import { Edge } from './Edge';
 import { Point } from './Point';
 import { Vector } from './Vector';
 
 export class PhysicsEngine {
-  edges:RigidEdge[];
+  edges: Edge[];
   points: Point[];
 
   constructor(
@@ -14,18 +14,17 @@ export class PhysicsEngine {
   }
 
   update(delta: number, width: number, height: number) {
+    this.edges.forEach(edge => {
+      edge.resolve();
+    });
     this.points.forEach(point => {
       point.addForce(this.gravity);
       point.update(delta);
       point.checkWalls(0, 0, width, height);
     });
-
-    this.edges.forEach(edge => {
-      edge.resolve();
-    });
   }
 
-  pointsAreConnected(p1: Point, p2: Point):RigidEdge | null {
+  pointsAreConnected(p1: Point, p2: Point): Edge | null {
     return this.edges.find(edge => edge.includes(p1) && edge.includes(p2)) || null;
   }
 

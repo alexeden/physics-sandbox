@@ -1,6 +1,6 @@
 import { SandboxMode } from './types';
 import { Renderer } from './Renderer';
-import { PhysicsEngine, Vector, PhysicsUtils, Point, RigidEdge } from '../physics';
+import { PhysicsEngine, Vector, PhysicsUtils, Point, Edge, RigidEdge } from '../physics';
 import { Shape } from '../shapes/Shape';
 
 export interface SandboxOptions {

@@ -1,4 +1,4 @@
-import {RigidEdge, Point, Vector } from '../physics';
+import {RigidEdge, Point, Vector, Edge } from '../physics';
 
 export interface RendererOptions {
   pointSize: number;
@@ -88,15 +88,19 @@ export class Renderer {
     this.ctx.restore();
   }
 
-  drawEdge(edge:RigidEdge) {
+  drawEdge(edge: Edge) {
+    const { p1, p2, id } = edge;
     this.ctx.save();
-    let strokeStyle = 'rgba(255,255,255,0.8)';
-    if (this.opts.showStress) {
-      const diff = edge.length - edge.p1.X.distance(edge.p2.X);
-      const per = Math.round(Math.min(Math.abs(diff / (edge.length * this.opts.linkStressRatio)), 1) * 255);
-      strokeStyle = 'rgba(255, ' + (255 - per) + ', ' + (255 - per) + ', 1)';
-    }
-    this.line(edge.p1.X.x, edge.p1.X.y, edge.p2.X.x, edge.p2.X.y).stroke(strokeStyle);
+    let strokeStyle = 'rgba(255,255,255,1)';
+    // if (this.opts.showStress) {
+    //   const diff = edge.length - edge.p1.X.distance(edge.p2.X);
+    //   const per = Math.round(Math.min(Math.abs(diff / (edge.length * this.opts.linkStressRatio)), 1) * 255);
+    //   strokeStyle = 'rgba(255, ' + (255 - per) + ', ' + (255 - per) + ', 1)';
+    // }
+    // const center = edge.center();
+    // this.text(`${p1.id} ${p2.id}`, center.x, center.y - 5, 'center', 'middle');
+
+    this.line(p1.X.x, p1.X.y, p2.X.x, p2.X.y).stroke(strokeStyle);
     this.ctx.restore();
   }
 }
